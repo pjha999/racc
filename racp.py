@@ -2,6 +2,7 @@
 
 import glob, re
 
+# load all logs
 files = glob.glob('./RACCLOG *.txt')
 
 records = []
@@ -11,24 +12,25 @@ for file in files:
     lines = fin.readlines()
 
     record = ''
-    matchstr = re.compile(r'\[.*\]')
+    matchstr = re.compile(r'\[.*\]')    # detect [*]
     for line in lines:
         if matchstr.match(line) is not None:
-            records.append(record)
+            records.append(record)      # add record to records
             record = ''
         else:
-            record += line
+            record += line              # add line to record
     records.append(record)
 
 print("total " + str(len(records)) + " records.")
 
+# parse HTML tags
 cnt=0
 for record in records:
-    intext = re.sub(r'\<[^>]*\>','\n',record)     # erase <*>
-    intext = re.sub(r'\([^)]*\)','\n',intext)     # erase (*)
-    intext = re.sub('&lt;','',intext)     # erase &lt;
-    intext = re.sub('&gt;','',intext)     # erase &gt;
-    intext = re.sub('http://www.gagalive.com','',intext)     # erase &gt;
+    intext = re.sub(r'\<[^>]*\>','\n',record)     # erase <*> (HTML)
+    intext = re.sub(r'\([^)]*\)','\n',intext)     # erase (*) (time)
+    intext = re.sub('&lt;','',intext)     # erase &lt; (escape)
+    intext = re.sub('&gt;','',intext)     # erase &gt; (escape)
+    intext = re.sub('http://www.gagalive.com','',intext)     # erase siteURL;
     for line in intext.split('\n'):
         if '010' in line:     # phone numbers
             cnt+=1
